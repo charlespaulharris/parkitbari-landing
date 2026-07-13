@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ParkItBari – Find Free Parking in Bari, Together</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="ParkItBari is a crowd-sourced parking radar that helps drivers find free street parking in Bari, in real time." />
+
+  <!-- Google Font (optional) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-soft: #0b1020;
+      --primary: #35d399;
+      --primary-soft: rgba(53, 211, 153, 0.12);
+      --accent: #facc15;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2933;
+      --danger: #f97373;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.45);
+      --radius-xl: 1.5rem;
+      --radius-2xl: 2rem;
+      --transition-fast: 180ms ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 48%, #000 100%);
+      color: var(--text-main);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 1.25rem 1.25rem 4rem;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0 0.5rem;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(to bottom, rgba(2,6,23,0.92), rgba(2,6,23,0.75), transparent);
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 0.9rem;
+      background: radial-gradient(circle at 30% 20%, #bbf7d0 0, #22c55e 36%, #16a34a 65%, #052e16 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(15,23,42,0.9), 0 12px 25px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-mark::after {
+      content: "";
+      width: 140%;
+      height: 140%;
+      position: absolute;
+      border-radius: inherit;
+      border: 1px solid rgba(15,23,42,0.6);
+      mix-blend-mode: soft-light;
+    }
+
+    .logo-p {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: #ecfdf5;
+    }
+
+    .logo-text-main {
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .logo-text-sub {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.9rem;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      padding: 0.4rem 0.1rem;
+      position: relative;
+      transition: color var(--transition-fast);
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -0.25rem;
+      height: 2px;
+      width: 0;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 999px;
+      transition: width var(--transition-fast);
+    }
+
+    nav a:hover {
+      color: var(--text-main);
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .nav-cta {
+      background: radial-gradient(circle at 0 0, #bbf7d0 0, #22c55e 28%, #16a34a 55%, #052e16 100%);
+      color: #022c22;
+      padding: 0.4rem 0.95rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 10px 24px rgba(22, 163, 74, 0.35);
+      border: 1px solid rgba(21, 128, 61, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-cta span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav-cta::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 130% 0, rgba(250, 204, 21, 0.7), transparent 55%);
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+    }
+
+    .nav-cta:hover::before {
+      opacity: 1;
+    }
+
+    .nav-cta-icon {
+      font-size: 1rem;
+    }
+
+    /* Language visibility */
+    .lang-en { display: inline; }
+    .lang-it { display: none; }
+
+    :root[data-lang="en"] .lang-en { display: inline; }
+    :root[data-lang="en"] .lang-it { display: none; }
+
+    :root[data-lang="it"] .lang-en { display: none; }
+    :root[data-lang="it"] .lang-it { display: inline; }
+
+    /* Language toggle buttons */
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-left: 0.75rem;
+      font-size: 0.78rem;
+    }
+
+    .lang-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,0.9);
+      background: rgba(15,23,42,0.9);
+      color: var(--text-muted);
+      padding: 0.2rem 0.6rem;
+      cursor: pointer;
+    }
+
+    .lang-btn-active {
+      border-color: rgba(34,197,94,0.9);
+      color: #bbf7d0;
+      background: rgba(6,95,70,0.4);
+    }
+
+    @media (max-width: 720px) {
+      nav a:not(.nav-cta) {
+        display: none;
+      }
+    }
+
+    /* Hero */
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 2.5rem;
+      align-items: center;
+      padding: 3rem 0 2.5rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      border-radius: 999px;
+      padding: 0.22rem 0.5rem 0.22rem 0.22rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(55, 65, 81, 0.8);
+      margin-bottom: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .hero-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 40% 20%, #bbf7d0 0, #22c55e 30%, #166534 70%, #052e16 100%);
+      position: relative;
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.1), 0 0 18px rgba(74,222,128,0.55);
+    }
+
+    .hero-dot::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: inherit;
+      border: 1px solid rgba(6, 95, 70, 0.7);
+      opacity: 0.9;
+    }
+
+    .hero-badge-tag {
+      padding: 0.12rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(21, 128, 61, 0.15);
+      color: #bbf7d0;
+      font-weight: 600;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 4vw, 3.2rem);
+      line-height: 1.1;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title span.emph {
+      background: linear-gradient(90deg, #22c55e, #facc15);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      max-width: 490px;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .btn-primary {
+      border-radius: 999px;
+      padding: 0.7rem 1.4rem;
+      background: radial-gradient(circle at 0 0, #bbf7d0 0, #22c55e 25%, #16a34a 52%, #052e16 100%);
+      color: #022c22;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid rgba(22, 163, 74, 0.9);
+      box-shadow: 0 18px 35px rgba(22, 163, 74, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 20px 40px rgba(22, 163, 74, 0.45);
+    }
+
+    .btn-secondary {
+      border-radius: 999px;
+      padding: 0.7rem 1.3rem;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(55,65,81,0.9);
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(17,24,39,0.95);
+      border-color: rgba(148,163,184,1);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    .hero-footnote {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .hero-footnote strong {
+      color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    /* Hero phone mock */
+
+    .hero-phone-wrapper {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .phone {
+      width: 280px;
+      max-width: 100%;
+      aspect-ratio: 9 / 18;
+      border-radius: 2.3rem;
+      padding: 0.7rem;
+      background: radial-gradient(circle at 0 0, #0f172a 0, #020617 35%, #000 100%);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 0.6rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 38%;
+      height: 0.45rem;
+      border-radius: 999px;
+      background: #020617;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.85);
+    }
+
+    .phone-screen {
+      height: 100%;
+      width: 100%;
+      border-radius: 1.7rem;
+      background: radial-gradient(circle at 0 0, rgba(34,197,94,0.18), transparent 55%), radial-gradient(circle at 100% 0, rgba(250,204,21,0.22), transparent 55%), #020617;
+      padding: 0.75rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phone-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .phone-pill {
+      border-radius: 999px;
+      padding: 0.12rem 0.45rem;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(55,65,81,0.7);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .phone-pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34,197,94,0.85);
+    }
+
+    .phone-map {
+      flex: 1;
+      border-radius: 1.2rem;
+      background: radial-gradient(circle at 0 0, #22c55e 0, #16a34a 6%, #0f172a 50%, #020617 100%);
+      border: 1px solid rgba(22, 101, 52, 0.5);
+      position: relative;
+      overflow: hidden;
+      padding: 0.9rem;
+    }
+
+    .phone-map-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(15,23,42,0.75) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15,23,42,0.75) 1px, transparent 1px);
+      background-size: 26px 26px;
+      mix-blend-mode: soft-light;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .phone-spot {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 40% 20%, #fefce8 0, #facc15 18%, #f97316 55%, #7c2d12 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 18px rgba(234,179,8,0.7);
+      font-size: 0.6rem;
+      color: #1f2937;
+    }
+
+    .phone-spot::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: inherit;
+      border: 1px solid rgba(251, 191, 36, 0.95);
+    }
+
+    .phone-spot--green {
+      background: radial-gradient(circle at 40% 20%, #bbf7d0 0, #4ade80 28%, #22c55e 55%, #166534 100%);
+      box-shadow: 0 10px 18px rgba(34,197,94,0.65);
+      color: #022c22;
+    }
+
+    .phone-spot--warning {
+      background: radial-gradient(circle at 40% 20%, #fef9c3 0, #fde047 26%, #f59e0b 55%, #92400e 100%);
+      box-shadow: 0 10px 18px rgba(245,158,11,0.65);
+      color: #1f2937;
+    }
+
+    .phone-spot-label {
+      position: absolute;
+      top: -1.45rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.62rem;
+      padding: 0.12rem 0.45rem;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      white-space: nowrap;
+      border: 1px solid rgba(55,65,81,0.85);
+    }
+
+    .phone-footer {
+      margin-top: 0.55rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+    }
+
+    .phone-cta {
+      flex: 1;
+      border-radius: 999px;
+      padding: 0.4rem 0.6rem;
+      background: radial-gradient(circle at 0 0, #bbf7d0 0, #22c55e 30%, #16a34a 65%, #052e16 100%);
+      color: #022c22;
+      font-size: 0.72rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      border: 1px solid rgba(22,163,74,0.9);
+    }
+
+    .phone-pill-mini {
+      border-radius: 999px;
+      padding: 0.28rem 0.55rem;
+      background: rgba(15,23,42,0.9);
+      color: var(--text-muted);
+      font-size: 0.66rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      border: 1px solid rgba(55,65,81,0.85);
+    }
+
+    .phone-pill-mini-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    section {
+      padding: 2.5rem 0 0;
+    }
+
+    .section-heading {
+      font-size: 1.35rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 520px;
+    }
+
+    .features-grid {
+      margin-top: 1.75rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .feature-card {
+      border-radius: var(--radius-xl);
+      background: radial-gradient(circle at top left, rgba(34,197,94,0.16), transparent 45%),
+                  rgba(15,23,42,0.95);
+      border: 1px solid rgba(31,41,55,0.9);
+      padding: 1rem;
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      box-shadow: 0 16px 32px rgba(0,0,0,0.35);
+    }
+
+    .feature-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 0.85rem;
+      background: radial-gradient(circle at 25% 10%, #fef3c7 0, #fbbf24 24%, #f97316 55%, #7c2d12 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .feature-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .feature-text {
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .feature-tag {
+      font-size: 0.75rem;
+      color: #d1fae5;
+      background: rgba(6,95,70,0.5);
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      align-self: flex-start;
+      margin-top: 0.2rem;
+    }
+
+    .how-grid {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .how-step {
+      border-radius: var(--radius-xl);
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(31,41,55,1);
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .how-step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #e5e7eb;
+      margin-bottom: 0.5rem;
+      background: rgba(15,23,42,0.95);
+    }
+
+    .how-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .how-text {
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .bari-card {
+      margin-top: 1.75rem;
+      border-radius: var(--radius-2xl);
+      background: radial-gradient(circle at top left, rgba(34,197,94,0.16), transparent 40%),
+                  radial-gradient(circle at bottom right, rgba(250,204,21,0.12), transparent 45%),
+                  rgba(15,23,42,0.96);
+      border: 1px solid rgba(31,41,55,0.95);
+      padding: 1.4rem 1.3rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bari-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-radius: 999px;
+      padding: 0.16rem 0.55rem;
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(55,65,81,0.95);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .bari-pill {
+      font-size: 0.72rem;
+      color: #d1fae5;
+      background: rgba(6,95,70,0.6);
+      padding: 0.12rem 0.5rem;
+      border-radius: 999px;
+    }
+
+    .bari-text-main {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .bari-map {
+      position: relative;
+      border-radius: 1.5rem;
+      background: radial-gradient(circle at 0 0, #22c55e 0, #16a34a 18%, #4b5563 55%, #020617 100%);
+      border: 1px solid rgba(22, 101, 52, 0.7);
+      overflow: hidden;
+      padding: 0.7rem;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.55);
+      min-height: 170px;
+    }
+
+    .bari-map::before,
+    .bari-map::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(15,23,42,0.8) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15,23,42,0.8) 1px, transparent 1px);
+      background-size: 22px 22px;
+      opacity: 0.6;
+      mix-blend-mode: soft-light;
+    }
+
+    .bari-map::after {
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(34,197,94,0.35), transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(234,179,8,0.35), transparent 55%);
+      opacity: 0.9;
+    }
+
+    .bari-map-label {
+      position: absolute;
+      left: 1rem;
+      top: 0.8rem;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.92);
+      border: 1px solid rgba(55,65,81,0.9);
+      padding: 0.25rem 0.6rem;
+      font-size: 0.72rem;
+      color: #e5e7eb;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      z-index: 1;
+    }
+
+    .bari-pin-count {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      border-radius: 1rem;
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(55,65,81,0.9);
+      padding: 0.4rem 0.6rem;
+      font-size: 0.7rem;
+      color: #d1d5db;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      z-index: 1;
+    }
+
+    .bari-pin-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 9px rgba(34,197,94,0.9);
+    }
+
+    .download-card {
+      margin-top: 2.5rem;
+      border-radius: var(--radius-2xl);
+      background: radial-gradient(circle at top left, rgba(34,197,94,0.18), transparent 45%),
+                  radial-gradient(circle at bottom right, rgba(30,64,175,0.35), transparent 55%),
+                  #020617;
+      border: 1px solid rgba(31,41,55,0.95);
+      padding: 1.6rem 1.5rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
+      gap: 1.4rem;
+      align-items: center;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+    }
+
+    .download-title {
+      font-size: 1.25rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .download-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .store-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .store-btn {
+      border-radius: 0.85rem;
+      padding: 0.4rem 0.8rem;
+      border: 1px solid rgba(55,65,81,1);
+      background: rgba(15,23,42,0.96);
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: #e5e7eb;
+    }
+
+    .store-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 0.45rem;
+      background: radial-gradient(circle at 0 0, #fef9c3 0, #fbbf24 32%, #f97316 75%, #7c2d12 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .store-label {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.1;
+    }
+
+    .store-label span:first-child {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .store-label span:last-child {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .download-pill {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .download-pill span {
+      color: #bbf7d0;
+      font-weight: 600;
+    }
+
+    .download-side {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      border-radius: 1.3rem;
+      border: 1px dashed rgba(75,85,99,0.9);
+      padding: 0.9rem 0.85rem;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .email-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .email-label {
+      font-size: 0.78rem;
+      color: var(--text-main);
+    }
+
+    .email-input {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid rgba(55,65,81,0.95);
+      background: rgba(15,23,42,0.96);
+      padding: 0.45rem 0.9rem;
+      font-size: 0.84rem;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .email-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .email-input:focus {
+      border-color: rgba(34,197,94,0.9);
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.4);
+    }
+
+    .email-submit {
+      border-radius: 999px;
+      border: 1px solid rgba(22,163,74,0.9);
+      background: radial-gradient(circle at 0 0, #bbf7d0 0, #22c55e 25%, #16a34a 60%, #052e16 100%);
+      color: #022c22;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.45rem 1rem;
+      cursor: pointer;
+      align-self: flex-start;
+      box-shadow: 0 10px 22px rgba(22,163,74,0.45);
+    }
+
+    .form-note {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    footer {
+      margin-top: 2.75rem;
+      padding-top: 1.4rem;
+      border-top: 1px solid rgba(31,41,55,0.9);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 0.9rem;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+    }
+
+    .footer-links a:hover {
+      color: var(--text-main);
+    }
+
+    @media (max-width: 920px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-phone-wrapper {
+        justify-content: flex-start;
+      }
+
+      .bari-card {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .download-card {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .features-grid,
+      .how-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .bari-card {
+        padding: 1.1rem 1rem;
+      }
+
+      .download-card {
+        padding: 1.2rem 1.1rem;
+      }
+
+      .hero {
+        padding-top: 2.2rem;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+    }
+
+    @keyframes pulse-spot {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.7;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.4);
+        opacity: 0;
+      }
+    }
+
+    .phone-spot-pulse {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(234,179,8,0.5), transparent 60%);
+      transform: translate(-50%, -50%);
+      animation: pulse-spot 1.6s ease-out infinite;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="logo">
+        <div class="logo-mark">
+          <span class="logo-p">P</span>
+        </div>
+        <div>
+          <div class="logo-text-main">ParkItBari</div>
+          <div class="logo-text-sub">PARKING · BY THE PEOPLE</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#bari">Why Bari</a>
+        <a href="https://parkitbari-app.netlify.app" class="nav-cta" target="_blank" rel="noopener">
+          <span class="nav-cta-icon">&#128506;</span>
+          <span class="lang-en">Open the map</span>
+          <span class="lang-it">Apri la mappa</span>
+        </a>
+        <div class="lang-toggle">
+          <button type="button" class="lang-btn lang-btn-active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="it">IT</button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Hero -->
+      <section class="hero">
+        <div>
+          <div class="hero-badge">
+            <div class="hero-dot"></div>
+            <span class="lang-en">Live, crowd-sourced parking intel</span>
+            <span class="lang-it">Informazioni parcheggio in tempo reale, create dalle persone</span>
+            <span class="hero-badge-tag">Bari only · Beta</span>
+          </div>
+          <h1 class="hero-title">
+            <span class="lang-en">
+              Find free parking in <span class="emph">seconds</span>, not circles.
+            </span>
+            <span class="lang-it">
+              Trova parcheggio gratuito in <span class="emph">pochi secondi</span>, non girando a vuoto.
+            </span>
+          </h1>
+          <p class="hero-subtitle">
+            <span class="lang-en">
+              ParkItBari is a crowd-sourced parking radar for Bari. When someone leaves a free street spot, they tap once. You see it on the map before you start your next lap around the block.
+            </span>
+            <span class="lang-it">
+              ParkItBari è un radar parcheggi creato dalle persone di Bari. Quando qualcuno libera un posto in strada, tocca un pulsante e tu lo vedi sulla mappa, prima di iniziare il prossimo giro dell’isolato.
+            </span>
+          </p>
+          <div class="hero-actions">
+            <a href="https://parkitbari-app.netlify.app" class="btn-primary" target="_blank" rel="noopener">
+              <span class="lang-en">Open the map</span>
+              <span class="lang-it">Apri la mappa</span>
+              <span>&rarr;</span>
+            </a>
+            <a href="#how-it-works" class="btn-secondary">
+              <span class="lang-en">See how it works</span>
+              <span class="lang-it">Scopri come funziona</span>
+              <span>👀</span>
+            </a>
+          </div>
+          <p class="hero-footnote">
+            <span class="lang-en"><strong>No sensors, no bureaucracy.</strong> Just drivers helping drivers in real time.</span>
+            <span class="lang-it"><strong>Nessun sensore, nessuna burocrazia.</strong> Solo automobilisti che aiutano altri automobilisti in tempo reale.</span>
+          </p>
+        </div>
+
+        <div class="hero-phone-wrapper" aria-hidden="true">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="phone-header">
+                <div class="phone-pill">
+                  <div class="phone-pill-dot"></div>
+                  <span>Free spots nearby</span>
+                </div>
+                <span>Now · Bari</span>
+              </div>
+              <div class="phone-map">
+                <div class="phone-map-grid"></div>
+
+                <div class="phone-spot phone-spot--green" style="left: 28%; top: 32%;">
+                  <div class="phone-spot-label">Via Sparano · 2 min</div>
+                  P
+                </div>
+                <div class="phone-spot phone-spot--warning" style="left: 65%; top: 50%;">
+                  <div class="phone-spot-label">Old Town · 7 min</div>
+                  P
+                </div>
+                <div class="phone-spot" style="left: 38%; top: 69%;">
+                  P
+                </div>
+
+                <div class="phone-spot-pulse"></div>
+              </div>
+
+              <div class="phone-footer">
+                <button class="phone-cta">
+                  <span>🚗 I just left a spot</span>
+                </button>
+                <div class="phone-pill-mini">
+                  <div class="phone-pill-mini-dot"></div>
+                  <span>12 drivers live</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section id="features">
+        <h2 class="section-heading">
+          <span class="lang-en">Designed for the way Bari actually parks.</span>
+          <span class="lang-it">Pensato per il modo in cui Bari parcheggia davvero.</span>
+        </h2>
+        <p class="section-subtitle">
+          <span class="lang-en">
+            No complicated menus. One map, one big button, and simple signals that fade as soon as they’re out of date.
+          </span>
+          <span class="lang-it">
+            Niente menu complicati. Una mappa, un grande pulsante e segnali semplici che spariscono appena diventano vecchi.
+          </span>
+        </p>
+
+        <div class="features-grid">
+          <article class="feature-card">
+            <div class="feature-icon">📍</div>
+            <h3 class="feature-title">
+              <span class="lang-en">Real-time free spot radar</span>
+              <span class="lang-it">Radar parcheggi libero in tempo reale</span>
+            </h3>
+            <p class="feature-text">
+              <span class="lang-en">
+                See free street spots as soon as other drivers leave them. Pins appear on the map for a short window, so you’re never chasing last hour’s parking.
+              </span>
+              <span class="lang-it">
+                Vedi i posti liberi in strada non appena un altro automobilista li lascia. I pin restano sulla mappa solo per poco, così non insegui parcheggi di un’ora fa.
+              </span>
+            </p>
+            <span class="feature-tag">Live & lightweight</span>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">🤝</div>
+            <h3 class="feature-title">
+              <span class="lang-en">Crowd-sourced, not complicated</span>
+              <span class="lang-it">Creato dalle persone, non dalla burocrazia</span>
+            </h3>
+            <p class="feature-text">
+              <span class="lang-en">
+                No hardware, no city contract. Just drivers tapping a button when they pull out of a space, and others confirming if it’s really there.
+              </span>
+              <span class="lang-it">
+                Nessun hardware, nessuna convenzione col Comune. Solo automobilisti che, quando lasciano un posto, toccano un pulsante e altri che confermano se è davvero libero.
+              </span>
+            </p>
+            <span class="feature-tag">By the people</span>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3 class="feature-title">
+              <span class="lang-en">Smart fade-out logic</span>
+              <span class="lang-it">Logica intelligente “si spegne da solo”</span>
+            </h3>
+            <p class="feature-text">
+              <span class="lang-en">
+                Spots automatically disappear after about 20 minutes or a few “Not here” taps. Good intel floats to the top, bad intel fades away.
+              </span>
+              <span class="lang-it">
+                I posti spariscono automaticamente dopo circa 20 minuti o dopo alcuni “Non c’è più”. Le segnalazioni buone restano, quelle sbagliate svaniscono.
+              </span>
+            </p>
+            <span class="feature-tag">No clutter</span>
+          </article>
+        </div>
+      </section>
+
+      <!-- How it works -->
+      <section id="how-it-works">
+        <h2 class="section-heading">
+          <span class="lang-en">How it works in three taps.</span>
+          <span class="lang-it">Come funziona in tre tocchi.</span>
+        </h2>
+        <p class="section-subtitle">
+          <span class="lang-en">
+            ParkItBari is built to be usable with one hand and a red traffic light. You don’t need manuals, you don’t need an account, you just tap.
+          </span>
+          <span class="lang-it">
+            ParkItBari funziona con una mano e un semaforo rosso. Niente manuali, niente registrazioni complicate: tocchi e basta.
+          </span>
+        </p>
+
+        <div class="how-grid">
+          <article class="how-step">
+            <div class="how-step-num">1</div>
+            <h3 class="how-title">
+              <span class="lang-en">Open ParkItBari when you’re driving</span>
+              <span class="lang-it">Apri ParkItBari mentre guidi</span>
+            </h3>
+            <p class="how-text">
+              <span class="lang-en">
+                The app centers on your location and shows a clean map of Bari with recent free spots highlighted around you.
+              </span>
+              <span class="lang-it">
+                L’app si centra sulla tua posizione e mostra una mappa pulita di Bari con gli ultimi posti liberi evidenziati intorno a te.
+              </span>
+            </p>
+          </article>
+
+          <article class="how-step">
+            <div class="how-step-num">2</div>
+            <h3 class="how-title">
+              <span class="lang-en">Tap once when you leave a spot</span>
+              <span class="lang-it">Tocca una volta quando liberi il posto</span>
+            </h3>
+            <p class="how-text">
+              <span class="lang-en">
+                About to pull out of your parallel parking space? Tap “I just left a spot” and the app quietly shares it with nearby drivers.
+              </span>
+              <span class="lang-it">
+                Stai per uscire dal parcheggio? Tocca “Ho appena lasciato un posto” e l’app lo condivide in silenzio con chi è in zona.
+              </span>
+            </p>
+          </article>
+
+          <article class="how-step">
+            <div class="how-step-num">3</div>
+            <h3 class="how-title">
+              <span class="lang-en">Confirm or clear as you arrive</span>
+              <span class="lang-it">Conferma o cancella quando arrivi</span>
+            </h3>
+            <p class="how-text">
+              <span class="lang-en">
+                When you follow a pin, you can confirm that it’s really there—or tap “Not here” to clear bad intel for everyone else.
+              </span>
+              <span class="lang-it">
+                Quando segui un pin, puoi confermare che il posto è libero… oppure toccare “Non c’è più” per ripulire la mappa per tutti.
+              </span>
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Bari section -->
+      <section id="bari">
+        <div class="bari-card">
+          <div>
+            <div class="bari-tag">
+              <span>🇮🇹 Made for Bari</span>
+              <span class="bari-pill">Pilot city · Centro & beyond</span>
+            </div>
+            <h2 class="section-heading">
+              <span class="lang-en">Start where parking hurts the most.</span>
+              <span class="lang-it">Partiamo da dove parcheggiare fa più male.</span>
+            </h2>
+            <p class="bari-text-main">
+              <span class="lang-en">
+                From Poggiofranco to the Old Town, everyone in Bari has their own secret side street or lucky corner. ParkItBari turns that local knowledge into a shared, living map—without asking anyone to change their habits.
+                <br><br>
+                The goal is simple: fewer pointless laps around the same block, less stress before dinner, and a small daily win for anyone who drives in Bari.
+              </span>
+              <span class="lang-it">
+                Da Poggiofranco alla città vecchia, ogni barese ha la sua strada laterale segreta o l’angolo fortunato. ParkItBari trasforma questa conoscenza locale in una mappa viva e condivisa, senza chiedere a nessuno di cambiare abitudini.
+                <br><br>
+                L’obiettivo è semplice: meno giri a vuoto, meno stress prima di cena e una piccola vittoria quotidiana per chi guida a Bari.
+              </span>
+            </p>
+          </div>
+          <div class="bari-map">
+            <div class="bari-map-label">
+              <span>🗺</span>
+              <span class="lang-en">Bari · live parking layer</span>
+              <span class="lang-it">Bari · livello parcheggi in tempo reale</span>
+            </div>
+            <div class="bari-pin-count">
+              <div class="bari-pin-dot"></div>
+              <span class="lang-en">8 free spots just reported</span>
+              <span class="lang-it">8 posti liberi appena segnalati</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Download / beta + EMAIL FORM -->
+      <section id="download">
+        <div class="download-card">
+          <div>
+            <h2 class="download-title">
+              <span class="lang-en">Help us test the very first version.</span>
+              <span class="lang-it">Aiutaci a testare la primissima versione.</span>
+            </h2>
+            <p class="download-text">
+              <span class="lang-en">
+                We’re building a small, focused beta of ParkItBari with real drivers in Bari. If you’d like to try it early and tell us what actually works on your streets, leave your email and we’ll be in touch.
+              </span>
+              <span class="lang-it">
+                Stiamo preparando una piccola beta di ParkItBari con veri automobilisti baresi. Se vuoi provarla in anteprima e dirci cosa funziona davvero nelle tue strade, lasciaci la tua email e ti scriviamo noi.
+              </span>
+            </p>
+            <div class="store-buttons">
+              <a class="store-btn" href="https://parkitbari-app.netlify.app" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+                <div class="store-icon">&#128506;</div>
+                <div class="store-label">
+                  <span class="lang-en">Works in your browser &mdash; nothing to install</span>
+                  <span class="lang-it">Funziona nel browser &mdash; niente da installare</span>
+                  <span>Open ParkItBari</span>
+                </div>
+              </a>
+            </div>
+            <p class="download-pill">
+              <span class="lang-en">
+                Beta is <span>free</span> for early Bari drivers. Limited spots, pun very much intended.
+              </span>
+              <span class="lang-it">
+                La beta è <span>gratuita</span> per i primi automobilisti baresi. I posti sono limitati… come i parcheggi.
+              </span>
+            </p>
+          </div>
+          <div class="download-side">
+            <form
+              class="email-form"
+              name="beta-signup"
+              method="POST"
+              data-netlify="true"
+              netlify-honeypot="bot-field"
+              action="/grazie.html"
+            >
+              <input type="hidden" name="form-name" value="beta-signup" />
+              <p style="display:none;">
+                <label>Don't fill this out: <input name="bot-field" /></label>
+              </p>
+              <label class="email-label">
+                <span class="lang-en">Email</span>
+                <span class="lang-it">Inserisci la tua email</span>
+                <input
+                  type="email"
+                  name="email"
+                  class="email-input"
+                  placeholder="tuoindirizzo@email.com"
+                  required
+                />
+              </label>
+              <button type="submit" class="email-submit">
+                <span class="lang-en">Count me in</span>
+                <span class="lang-it">Contami</span>
+              </button>
+              <p class="form-note">
+                <span class="lang-en">
+                  No spam, just launch updates and occasional news about the beta.
+                </span>
+                <span class="lang-it">
+                  Niente spam: solo aggiornamenti sul lancio e qualche novità sulla beta.
+                </span>
+              </p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>© <span id="year"></span> ParkItBari. Built for Bari drivers.</div>
+      <div class="footer-links">
+        <a href="#features">Product</a>
+        <a href="#bari">Story</a>
+        <a href="#download">Beta</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Language toggle
+    const root = document.documentElement;
+    const langButtons = document.querySelectorAll(".lang-btn");
+
+    langButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const lang = btn.dataset.lang; // "en" or "it"
+        root.setAttribute("data-lang", lang);
+        root.setAttribute("lang", lang);
+
+        langButtons.forEach((b) => {
+          b.classList.toggle("lang-btn-active", b === btn);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
